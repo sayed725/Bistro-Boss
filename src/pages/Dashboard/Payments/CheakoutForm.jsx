@@ -5,6 +5,7 @@ import useCart from "../../../hooks/useCart";
 import useAuth from "../../../hooks/useAuth";
 
 
+
 const CheakoutForm = () => {
 
     const [error, setError] = useState('')
@@ -18,6 +19,7 @@ const CheakoutForm = () => {
     const [ cart ] = useCart()
     const totalPrice = cart?.reduce((total, item) => total + item.price, 0);
     console.log(totalPrice)
+    
 
     useEffect(()=>{
      axiosSecure.post('/create-payment-intent', {price: totalPrice})
@@ -76,6 +78,20 @@ const CheakoutForm = () => {
             if(paymentIntent.status === 'succeeded'){
                 console.log('transaction id', paymentIntent.id)
                 setTransactionId(paymentIntent.id)
+
+                // now save the payment in the data base
+                const payment = {
+                    email: user.email,
+                    price: totalPrice,
+                    transactionId: paymentIntent.id,
+                    date: new Date(), // utc date convert. use moment js to 
+                    cartIds: cart.map(item => item._id),
+                    menuItemIds: cart.map(item => item.menuId),
+                    status: 'pending'
+                }
+
+                const res = await axiosSecure.post('/payments', payment);
+                console.log('payment saved', res.data);
             }
         }
 
