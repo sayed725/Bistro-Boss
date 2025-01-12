@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const axiosPublic = axios.create({
-    baseURL: 'http://localhost:5001'
+    baseURL: 'https://bistro-boss-server-with-image-upload-part-6-dusky.vercel.app'
 })
 
 const useAxiosPublic = () => {
